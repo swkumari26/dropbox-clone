@@ -12,7 +12,8 @@ export default class Root extends Component {
       <Provider store={store}>
 		<div>
 		<Route exact path="/" component={Login} />
-		<Route exact path="/home" component={Home} />
+		<Route exact path="/home" component={Home } />
+		<Route exact path="/home/:folder" component={Home } />
 	    </div>      
 	  </Provider>
     )

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { DropdownMenu, MenuItem } from 'react-bootstrap-dropdown-menu';
 import {logoutAndRedirect} from '../actions/index';

@@ -25,9 +25,44 @@
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style type="text/css">
     .glyphicon.glyphicon-user {
     font-size: 30px;
+}
+.navbar-fixed-left{
+  position: fixed;
+  top: 0;
+  bottom:0;
+  left: 0;
+  height: 100%;
+  width:15%;
+  background-color: #f0f2f4
+}
+.button-set-large{
+  width:500px;
+}
+.upload-wrap {
+    position: relative;
+    display: inline-block;
+    background-color: #fcc;
+}
+
+.upload-btn {
+    position:absolute;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    background: #00f;
+    z-index:999;
+}
+.buttonlink {
+    background:none;
+     border:none; 
+     padding:0;
+    /*optional*/
+     cursor:pointer;
 }
 
   </style>
@@ -36,7 +71,11 @@
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
+    <div className="container-fluid">
+    <div id="root">
+      
+    </div>
+  </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

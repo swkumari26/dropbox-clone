@@ -22,7 +22,7 @@ exports.strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
 			{
 			 console.log(data);
 			if(data.length>0){
-			    next(null, data);				  
+			    next(null, data[0]);				  
 			}
 			else{
 			    next(null, false);

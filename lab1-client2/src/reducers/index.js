@@ -1,4 +1,4 @@
-import {LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER} from '../actions/index';
+import {LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER,UPLOAD_SUCCESS} from '../actions/index';
 import jwtDecode from 'jwt-decode';
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
@@ -6,7 +6,23 @@ const initialState = {
     token: null,
     isAuthenticated: false,
     isAuthenticating: false,
-    statusText: null
+    statusText: null,
+    // result:null
+    result: [ 'CMPE_272',
+  'CMPE_272/25Feb',
+  'CMPE_272/25Feb/4_WirelessTCP.ppt',
+  'CMPE_272/25Feb/TCPextra.ppt',
+  'CMPE_272/25Feb/TCPplots.ppt',
+  'CMPE_272/test',
+  'CMPE_272/test/empty',
+  'CMPE_272/test/empty/emptyagain',
+  'CMPE_272/test/text file.txt',
+  'CMPE_272/User_manual.docx' ],
+    tree:{
+        'root':{ 'absolute_path': '','files': ['CMPE_272']},
+        'CMPE_272':{ 'absolute_path': 'CMPE_272','files': ['test.txt','25Feb']},
+        '25Feb':{ 'absolute_path': 'CMPE_272/25Feb','files': ['test2.txt','testn.pdf']}
+    }
 };
 
 const login = (state = initialState, action) => {
@@ -18,13 +34,15 @@ const login = (state = initialState, action) => {
             'isAuthenticating': true,
             'statusText': null
         };
-        case LOGIN_USER_SUCCESS:
+        case LOGIN_USER_SUCCESS:        
         return{
             ...state,
             'token': [action.token],
             'isAuthenticated': true,
             'isAuthenticating': false,
-            'statusText': 'You have been successfully logged in.'
+            'statusText': 'You have been successfully logged in.',
+            'result':[action.result][0],
+            'tree':[action.tree][0]
         };
         case LOGIN_USER_FAILURE:
         return{
@@ -40,7 +58,13 @@ const login = (state = initialState, action) => {
             'isAuthenticated': false,
             'token': null,
             'statusText': 'You have been successfully logged out.'
-        };   
+        };     
+        case UPLOAD_SUCCESS:        
+        return{
+            ...state,
+            'result': [action.result],
+            'tree':[action.tree][0]
+        };              
         default :
             return state;            
     }
