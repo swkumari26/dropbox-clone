@@ -1,61 +1,125 @@
-import React, { Component } from 'react'
-import Folder from 'react-icons/lib/md/folder';
-import File from 'react-icons/lib/go/file-text';
+import React, { Component } from 'react';
+import FolderIcon from 'react-icons/lib/md/folder';
+import FileIcon from 'react-icons/lib/go/file-text';
+import PdfIcon from 'react-icons/lib/fa/file-pdf-o';
+import StarIcon from 'react-icons/lib/fa/star';
 import {Link}  from 'react-router-dom'
-import Content from './Content'
-import {Field} from 'redux-form'
 import history from '../history';
 import { bindActionCreators } from 'redux';
-import {createFolder} from '../actions/index';
+import {createFolder,deleteContent,starContent,shareContent} from '../actions/index';
 import { connect } from 'react-redux'
+import {Table} from 'reactstrap';
+
 class ContentItem extends Component { 
-   // handleKeyPress = (event,path,token) => {
-   //      if(event.key === "Enter")
-   //      { console.log("enter pressed");
-   //        (event) => {event.preventDefault(); 
-   //        this.props.createFolder(path,token);
-   //      }
-   //      }
-   //  };   
+   handleKeyPress = (event) => {
+        if(event.key === "Enter")
+        { console.log("enter pressed");
+          var folderPath = this.props.path+event.target.value ;
+          this.props.createFolder(folderPath,this.props.token);
+        }
+        }               
 render(){  
-  const{name,path,token} = this.props;
+  const{name,path,token,modifiedOn,members,star,deleteContent,shareContent,starContent} = this.props;
   console.log("name in sub:",name);
   console.log("path in contentitem:",path);
   console.log("token in contentitem:",token);
-  let displayIcon;
+  let displayIcon,buttonOptions
   let link = '/home/'+name;
+  let pathWithName = path+name;
+  console.log("path with name in content item",pathWithName);
     if (name)
     {
   	if (name.indexOf('.') > -1)
-  		{	displayIcon = (
-          <a><input type="checkbox"/><File size={50}/><span>{name}</span></a>
-    			)
+  		{	
+
+      if(star)
+          {        
+        if(name.indexOf('pdf') > -1)
+        {
+        displayIcon = (
+          <Link to=""><PdfIcon size={50}/><span>{name}     </span><StarIcon size={20}/></Link>
+          )
+        }
+        else
+        {
+        displayIcon = (
+          <Link to=""><FileIcon size={50}/><span>{name}     </span><StarIcon size={20}/></Link>
+          )  
+        }
+      }
+      else
+      {
+        if(name.indexOf('pdf') > -1)
+        {        
+        displayIcon = (
+          <Link to=""><PdfIcon size={50}/><span>{name}     </span></Link>
+          )
+        }
+        else
+        {
+        displayIcon = (
+          <Link to=""><FileIcon size={50}/><span>{name}     </span></Link>
+          )  
+        }
+      }
+        buttonOptions = (<div>
+          <button className="btn btn-default btn-sm">Share</button>
+          <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); deleteContent(pathWithName,token); }}>Delete</button>
+          <a className="btn btn-default btn-sm" href={"http://localhost:3001/dropbox/"+40+"/"+path+"/"+name} download>Download</a>
+          <button className="btn btn-default btn-sm">Star</button>
+          </div>
+          )               
     		}
     	else{
+        if(star)
+        {
   			displayIcon = (
-        <Link to="" onClick={(e) => {e.preventDefault(); history.push(link); }}><input type="checkbox"/><Folder size={50}/><span>{name}</span></Link>
-  			) 
-  		}
+        <Link to="" onClick={(e) => {e.preventDefault(); history.push(link); }}><FolderIcon size={50}/><span>{name}    </span><StarIcon size={20}/></Link>
+        )
+      }
+      else{
+        displayIcon = (
+        <Link to="" onClick={(e) => {e.preventDefault(); history.push(link); }}><FolderIcon size={50}/><span>{name}    </span></Link>
+        )        
+      }
+        buttonOptions = (<div>
+          <button className="btn btn-default btn-sm">Share</button>
+          <button className="btn btn-default btn-sm">Delete</button>
+          <button className="btn btn-default btn-sm">Star</button>
+          </div>
+          )        
+      }
     }
     else
     {
         displayIcon = (
-        <Link to="" onClick={(e) => {e.preventDefault(); history.push(link); }}><input type="checkbox"/><Folder size={50}/><input type="text" onKeyPress={(e) =>{e.preventDefault(); if(e.key==="Enter") this.props.createFolder(path,link); }}/></Link>
+        <a><FolderIcon size={50}/><input type="text" onKeyPress={this.handleKeyPress}/></a>
         )       
     }
   return(
-  	<div>
-  	{
-		displayIcon
-  	}
-  	</div>
+  <Table>
+  <tr>
+    <td className="col-lg-4 col-md-4 col-sm-4">
+    {displayIcon}
+  	</td>
+    <td className="col-lg-2 col-md-2 col-sm-2">
+    {modifiedOn}
+    </td>
+    <td className="col-lg-2 col-md-2 col-sm-2">
+    {members}
+    </td> 
+    <td className="col-lg-4 col-md-4 col-sm-4">
+      {buttonOptions}   
+    </td>
+    </tr> 
+    </Table>
   	);	
 }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({createFolder},dispatch)
+        ...bindActionCreators({createFolder,deleteContent,starContent,shareContent},dispatch)
     };
 }
 export default connect(null,mapDispatchToProps)(ContentItem);

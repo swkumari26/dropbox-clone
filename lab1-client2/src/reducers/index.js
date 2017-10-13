@@ -1,4 +1,4 @@
-import {LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER,UPLOAD_SUCCESS} from '../actions/index';
+import {LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER,UPLOAD_SUCCESS,CONTENT_SELECTED} from '../actions/index';
 import jwtDecode from 'jwt-decode';
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
@@ -7,6 +7,7 @@ const initialState = {
     isAuthenticated: false,
     isAuthenticating: false,
     statusText: null,
+    user:{id:null,firstname:null,lastname:null,email:null,music:null,show:null,sports:null,contentDeleted:null,contentUploaded:null,contentShared:null,contentDownloaded:null,contentMarkedStar:null},
     // result:null
     result: [ 'CMPE_272',
   'CMPE_272/25Feb',
@@ -22,7 +23,8 @@ const initialState = {
         'root':{ 'absolute_path': '','files': ['CMPE_272']},
         'CMPE_272':{ 'absolute_path': 'CMPE_272','files': ['test.txt','25Feb']},
         '25Feb':{ 'absolute_path': 'CMPE_272/25Feb','files': ['test2.txt','testn.pdf']}
-    }
+    },
+    contentSelected:{name:null,path:null}
 };
 
 const login = (state = initialState, action) => {
@@ -41,6 +43,7 @@ const login = (state = initialState, action) => {
             'isAuthenticated': true,
             'isAuthenticating': false,
             'statusText': 'You have been successfully logged in.',
+            'user':[action.user],
             'result':[action.result][0],
             'tree':[action.tree][0]
         };
@@ -64,7 +67,23 @@ const login = (state = initialState, action) => {
             ...state,
             'result': [action.result],
             'tree':[action.tree][0]
+        };   
+        case CONTENT_SELECTED:        
+        return{
+            ...state,
+            'contentSelected': {name:[action.name],path:[action.path]}
         };              
+        case 'persist/REHYDRATE':
+        return{
+            ...state,
+            'token': [action.payload.login.token][0],
+            'isAuthenticated': [action.payload.login.isAuthenticated][0],
+            'isAuthenticating': [action.payload.login.isAuthenticating][0],
+            'statusText': [action.payload.login.statusText][0],
+            'user':[action.payload.login.user][0],
+            'result':[action.payload.login.result][0],
+            'tree':[action.payload.login.tree][0]            
+        }      
         default :
             return state;            
     }

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { DropdownMenu, MenuItem } from 'react-bootstrap-dropdown-menu';
 import {logoutAndRedirect} from '../actions/index';
 import { bindActionCreators } from 'redux';
-
+import history from '../history';
 class Header extends Component {
 render(){
   const{pageName,userName,logoutAndRedirect} = this.props;
@@ -17,7 +17,7 @@ render(){
     <div className="col-lg-6 col-md-6 col-sm-6">
     <div className="float-right">
       <DropdownMenu userName={userName} position="left" triggerType='icon' trigger='glyphicon glyphicon-user'>
-        <MenuItem text='Settings                      '/>
+        <MenuItem text='Settings                      ' onClick={(e) => {e.preventDefault(); history.push('/account'); }}/>
         <MenuItem type='separator' />
         <MenuItem text='Logout                        ' onClick={(e) => {e.preventDefault(); logoutAndRedirect();}} />
       </DropdownMenu>    

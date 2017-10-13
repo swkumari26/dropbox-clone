@@ -1,0 +1,15 @@
+{
+  "name": "lab1-server1",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "jade": "*",
+    "morgan": "^1.9.0"
+  }
+}

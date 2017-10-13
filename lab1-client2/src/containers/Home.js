@@ -22,7 +22,7 @@ class Home extends Component {
         //     }
         // }  
   render() {
-  const{tree,token} = this.props; 
+  const{tree,token,user,contentSelected} = this.props; 
 var files={};
 console.log("tree in home is:",tree)
   console.log("parameters at home",this.props.match.params.folder);
@@ -59,7 +59,7 @@ console.log("tree in home is:",tree)
   </div>
   <div className="col-lg-10">
   <Header pageName="Home"/>
-  <Body files={files} token={token}/>
+  <Body files={files} token={token} user={user} contentSelected={contentSelected}/>
   </div>
   </div>
       )
@@ -67,9 +67,11 @@ console.log("tree in home is:",tree)
   }
   function mapStateToProps(state) {
     return{
+        user:state.login.user,
         token: state.login.token,
         isAuthenticated: state.login.isAuthenticated,
-        tree:state.login.tree
+        tree:state.login.tree,
+        contentSelected:state.login.contentSelected
     }
     }
 export default connect(mapStateToProps, null)(Home); 
