@@ -14,6 +14,7 @@ export const UPLOAD_FAILURE='UPLOAD_FAILURE';
 export const UPLOAD_REQUEST='UPLOAD_REQUEST';
 export const ADD_FOLDER_SPACE='ADD_FOLDER_SPACE';
 export const CONTENT_SELECTED='CONTENT_SELECTED';
+export const QUERY_SUCCESS='QUERY_SUCCESS';
 
 
 export function loginUserSuccess(data) {
@@ -52,6 +53,13 @@ addMetaData(tree,data.response.contentMetaData)
     type: UPLOAD_SUCCESS,
     result:data.response.result,
     tree:tree
+  }
+}
+
+export function querySuccess(data) {
+  return {
+    type: QUERY_SUCCESS,
+    accounts:data.response.accounts,
   }
 }
 
@@ -288,7 +296,7 @@ export const deleteContent = (path,token) =>{
     console.log("token received in action",token);
   return dispatch => {
     dispatch(uploadRequest());
-        if(path.indexOf('.') === -1)
+        if(path.indexOf('.') > -1)
         {
        return fetch('http://localhost:3001/uploadData/deleteFile', {
             method: 'post',
@@ -311,7 +319,7 @@ export const deleteContent = (path,token) =>{
                     dispatch(uploadFailure({
                         response: {
                             status: 403,
-                            statusText: 'Folder creation failed'
+                            statusText: 'File deletion failed'
                         }
                     }));
                 }
@@ -342,7 +350,7 @@ export const deleteContent = (path,token) =>{
                     dispatch(uploadFailure({
                         response: {
                             status: 403,
-                            statusText: 'Folder creation failed'
+                            statusText: 'Folder deletion failed'
                         }
                     }));
                 }
@@ -390,19 +398,39 @@ export const starContent = (path,token) =>{
             })
         }
   }
-export const shareContent = (path,token) =>{
-    console.log("folder path received in action",path);
-    console.log("token received in action",token);
+export const shareContent = (email,accounts,name,path,token,user) =>{
+var id;
+path=user+'/'+path;
+if(email.indexOf('@')>-1)
+    {
+    for(var i = 0; i < accounts.length; i++)
+        {
+        if(accounts[i].email == email)
+            {
+            id=accounts[i].id
+            }
+        }
+    }
+else
+    {
+    for(var i = 0; i < accounts.length; i++)
+    {   var fullname = accounts[i].firstname+" "+accounts[i].lastname;
+    if(fullname == email)
+        {
+            id=accounts[i].id
+        }
+    }
+    }
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/createFolder', {
+       return fetch('http://localhost:3001/uploadData/shareContent', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': token
+                'Authorization': token.token
             },               
-            body: JSON.stringify({"folderPath":path})
+            body: JSON.stringify({"sharedto":id,"name":name,"path":path})
             })
             .then(checkHttpStatus)
             .then(parseJSON)       
@@ -416,7 +444,7 @@ export const shareContent = (path,token) =>{
                     dispatch(uploadFailure({
                         response: {
                             status: 403,
-                            statusText: 'Folder creation failed'
+                            statusText: 'Sharing failed'
                         }
                     }));
                 }
@@ -425,14 +453,47 @@ export const shareContent = (path,token) =>{
                 dispatch(uploadFailure(error));
             })
         }
-  }  
+  } 
+export const getAccounts = (token) =>{
+  return dispatch => {
+    dispatch(uploadRequest());
+       return fetch('http://localhost:3001/user/getUsers', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token.token
+            }             
+            })
+            .then(checkHttpStatus)
+            .then(parseJSON)       
+            .then(response => {
+                try {
+                    dispatch(querySuccess({response:{
+                                    accounts:response.accounts
+                    }}));            
+                } catch (e) {
+                    dispatch(uploadFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Account fetch failed'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(uploadFailure(error));
+            })
+        }
+  }   
 function addMetaData(tree,contentMetaData)
 {
     for(var i=0;i<tree.length;i++){
     tree[i].star = contentMetaData[tree[i].absolute_path].star;
     tree[i].modifiedOn = contentMetaData[tree[i].absolute_path].createdOn;
     tree[i].members = contentMetaData[tree[i].absolute_path].members;
-}
+    tree[i].createdBy = contentMetaData[tree[i].absolute_path].createdBy;
+    }
 }
 
 function buildtree(result)
@@ -443,7 +504,8 @@ var tree = {
     files: [],
     star:false,
     modifiedOn:null,
-    members:[]
+    members:[],
+    createdBy:null
   }
 };
 

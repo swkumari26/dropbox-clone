@@ -1,4 +1,4 @@
-import {LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER,UPLOAD_SUCCESS,CONTENT_SELECTED} from '../actions/index';
+import {QUERY_SUCCESS,LOGIN_USER_REQUEST, LOGIN_USER_SUCCESS, LOGIN_USER_FAILURE, LOGOUT_USER,UPLOAD_SUCCESS,CONTENT_SELECTED} from '../actions/index';
 import jwtDecode from 'jwt-decode';
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
@@ -8,7 +8,6 @@ const initialState = {
     isAuthenticating: false,
     statusText: null,
     user:{id:null,firstname:null,lastname:null,email:null,music:null,show:null,sports:null,contentDeleted:null,contentUploaded:null,contentShared:null,contentDownloaded:null,contentMarkedStar:null},
-    // result:null
     result: [ 'CMPE_272',
   'CMPE_272/25Feb',
   'CMPE_272/25Feb/4_WirelessTCP.ppt',
@@ -24,7 +23,8 @@ const initialState = {
         'CMPE_272':{ 'absolute_path': 'CMPE_272','files': ['test.txt','25Feb']},
         '25Feb':{ 'absolute_path': 'CMPE_272/25Feb','files': ['test2.txt','testn.pdf']}
     },
-    contentSelected:{name:null,path:null}
+    contentSelected:{name:null,path:null},
+    accounts:[{id:null,firstname:null,lastname:null,email:null},{id:null,firstname:null,lastname:null,email:null}]
 };
 
 const login = (state = initialState, action) => {
@@ -60,14 +60,19 @@ const login = (state = initialState, action) => {
             ...state,
             'isAuthenticated': false,
             'token': null,
-            'statusText': 'You have been successfully logged out.'
+            'statusText': 'You have been successfully logged out,please log in to continue..'
         };     
         case UPLOAD_SUCCESS:        
         return{
             ...state,
             'result': [action.result],
             'tree':[action.tree][0]
-        };   
+        }; 
+        case QUERY_SUCCESS:        
+        return{
+            ...state,
+            'accounts':[action.accounts][0]
+        };          
         case CONTENT_SELECTED:        
         return{
             ...state,

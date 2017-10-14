@@ -5,7 +5,7 @@ var express = require('express')
 router.post('/calculate', function (req, res, next) {
     var values = [];
     var operators = [];
-    var number;
+    var number,errflag;
     var result;
     var input = req.body.input.split(" ");
     console.log("input recieved",input)
@@ -28,11 +28,25 @@ router.post('/calculate', function (req, res, next) {
     	case '+':{ result += Number(values.shift());console.log("result after add:",result);break;}
     	case '-': result -= Number(values.shift());console.log("result after sub:",result);break;
     	case '*': result *= Number(values.shift());console.log("result after mul:",result);break;
-    	case '/': result /= Number(values.shift());console.log("result after div:",result);break;
+    	case '/': var value = values.shift();
+    			  if(value === '0')
+    		      {
+    				  errflag = true;
+    				  break;
+    		      }
+    			  else
+    			  {
+    			  result /= Number(value);console.log("result after div:",result);
+    		      }
+    			  break;
     	}
     }
+    if(errflag){res.status(403).json({statusText:"divide by 0 exception"});}
+    else
+    {
     console.log("result is:",result);
     res.json({result:result});
+    }
 });
 
 module.exports = router;

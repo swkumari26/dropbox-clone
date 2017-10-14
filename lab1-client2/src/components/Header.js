@@ -17,9 +17,9 @@ render(){
     <div className="col-lg-6 col-md-6 col-sm-6">
     <div className="float-right">
       <DropdownMenu userName={userName} position="left" triggerType='icon' trigger='glyphicon glyphicon-user'>
-        <MenuItem text='Settings                      ' onClick={(e) => {e.preventDefault(); history.push('/account'); }}/>
+        <MenuItem text='Settings' onClick={(e) => {e.preventDefault(); history.push('/account'); }}/>
         <MenuItem type='separator' />
-        <MenuItem text='Logout                        ' onClick={(e) => {e.preventDefault(); logoutAndRedirect();}} />
+        <MenuItem text='Logout' onClick={(e) => {e.preventDefault(); logoutAndRedirect();}} />
       </DropdownMenu>    
     </div>
     </div>    

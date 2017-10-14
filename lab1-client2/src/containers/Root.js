@@ -7,10 +7,22 @@ import Account from './Account'
 import { Route } from 'react-router-dom'
 import {persistStore} from 'redux-persist'
 const store = configureStore()
-persistStore(store)
+// persistStore(store)
 
 export default class Root extends Component {
+  constructor() {
+    super()
+    this.state = { rehydrated: false }
+  }
+  componentWillMount(){
+    persistStore(store, {}, () => {
+      this.setState({ rehydrated: true })
+    })
+  }  	
   render() {
+    if(!this.state.rehydrated){
+      return <div>Loading...</div>
+    }  	
     return (
       <Provider store={store}>
 		<div>

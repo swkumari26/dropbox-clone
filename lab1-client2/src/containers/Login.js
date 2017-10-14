@@ -7,25 +7,40 @@ import { bindActionCreators } from 'redux';
 
 class Login extends Component {
   render() {
-    const {loginUser } = this.props
+    const {loginUser,statusText } = this.props
     return (
-      <div className="row">
-      <div className="col-lg-3 col-md-3 col-sm-3">
-      </div>
-      <div className="col-lg-3 col-md-3 col-sm-3">
-        <img src="https://cfl.dropboxstatic.com/static/images/empty_states/sign-in-vflchypbO.png"/>
-      </div>   
-      <div className="col-lg-3 col-md-3 col-sm-3">
-        <LoginComponent loginUser={loginUser}/>
-      </div> 
+      <div className="container-fluid">
+        <div className="row justify-content-md-center">
+          <h4>{statusText}</h4>
+        </div>       
+        <div className="row justify-content-md-center">
+          <img src="https://cfl.dropboxstatic.com/static/images/favicon-vflUeLeeY.ico"></img><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><h2><strong>Cmpe273 Lab1-Dropbox</strong></h2>
+        </div>
+        <hr/>
+        <br/>
+        <br/>
+        <div className="col-lg-3 col-md-3 col-sm-3">
+        </div>
+        <div className="col-lg-3 col-md-3 col-sm-3">
+          <img src="https://cfl.dropboxstatic.com/static/images/empty_states/sign-in-vflchypbO.png"/>
+        </div>   
+        <div className="col-lg-3 col-md-3 col-sm-3">
+          <LoginComponent loginUser={loginUser}/>
+        </div>
+        <br/>
+        <br/>       
       </div>
     )
   }
 }
-
+  function mapStateToProps(state) {
+    return{
+        statusText:state.login.statusText
+      }
+    }
 function mapDispatchToProps(dispatch) {
     return {
         ...bindActionCreators({loginUser},dispatch)
     };
 }
-export default connect(null,mapDispatchToProps)(Login);
+export default connect(mapStateToProps,mapDispatchToProps)(Login);

@@ -6,7 +6,6 @@ import LoginComponent from '../components/Login'
 import Header from '../components/Header'
 import Body from '../components/Body'
 import { bindActionCreators } from 'redux';
-import { Sidebar, SidebarItem } from 'react-responsive-sidebar';
 import {Table} from 'reactstrap';
 class Account extends Component {
         // componentWillMount () {

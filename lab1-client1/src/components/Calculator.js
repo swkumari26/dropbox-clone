@@ -6,17 +6,19 @@ import { bindActionCreators } from 'redux';
 
 class Calculator extends Component {
     render() {
-        const {input,output,numberPressed,deletePressed,calculate,operatorPressed,clearPressed} = this.props;
+        const {input,output,statusText,numberPressed,deletePressed,calculate,operatorPressed,clearPressed} = this.props;
         return (
             <div className="container-fluid">
                 <div className="row justify-content-md-center">
-                    <div className="col-md-6">
+                    <div className="col-lg-6 col-md-6 col-sm-6">
+                        <br/>
+                        <br/>
                         <h2 className="text-center">lab1-client1-Calculator</h2>
                     </div>
                 </div>
                 <hr/>
                 <div className="row justify-content-md-center">
-                <div className="col-md-3 ">
+                <div className="col-lg-4 col-md-4 col-sm-4">
                 <div className="well">
                 <div className="panel panel-primary">
                     <div className="panel-header">
@@ -47,21 +49,28 @@ class Calculator extends Component {
                                 <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); numberPressed(input,'2'); }}>2</button></td>
                                 <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); numberPressed(input,'3'); }}>3</button></td>
                                 <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); operatorPressed(input,'*'); }}>*</button></td>
+                                <td></td>
                             </tr>
                             <tr>
                                 <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); numberPressed(input,'.'); }}>.</button></td>
-                                
-                                <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); numberPressed(input); }}>0</button></td>
+                                <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); numberPressed(input,0); }}>0</button></td>
                                 <td></td>
                                 <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); operatorPressed(input,'/'); }}>/</button></td>                                
-                                <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); calculate(input); }}>=</button></td>
+                                <td><button className="btn btn-basic btn-sm" onClick={(e) => {e.preventDefault(); input?calculate(input):""; }}>=</button></td>
                             </tr>    
                         </tbody>                                                                                
-                        </table>
+                    </table>
                     </div>
                 </div>
             </div>
             </div>
+                <div className="row justify-content-md-center">
+                    <div className="col-lg-6 col-md-6 col-sm-6">
+                        <br/>
+                        <br/>
+                        <h2 className="text-center">{statusText}</h2>
+                    </div>
+                </div>            
             </div>
         );
     }
@@ -71,7 +80,8 @@ class Calculator extends Component {
 function mapStateToProps(state) {
     return{
         input:state.input,
-        output:state.output
+        output:state.output,
+        statusText:state.statusText
     }    
 }
 

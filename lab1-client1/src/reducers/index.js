@@ -13,23 +13,31 @@ const calculator = (state = initialState, action) => {
         case NUMBER_PRESSED :
            return {
                ...state,
-               "input" : [action.input]+[action.number]
+               "input" : [action.input]+[action.number],
+               "output":null,
+               "statusText":null
            };
         case OPERATOR_PRESSED :
            return {
                ...state,
-               "input" : [action.input]+' '+ [action.operator]+' '
+               "input" : [action.input]+ [action.operator],
+               "output":null,
+               "statusText":null
            };           
 
         case DELETE_PRESSED :
            return {
                ...state,
-               "input" : ([action.input][0]).substring(0,[action.input][0].length-1)
+               "input" : ([action.input][0]).substring(0,[action.input][0].length-1),
+               "output":null,
+               "statusText":null
            };
         case CALCULATE_FAILURE :
            return {
                ...state,
-               'statusText': `Authentication Error: ${action.status} ${action.statusText}`
+               "input":null,
+               "output":null,
+               'statusText': `Calculation Error: divide by 0 exception`
            };  
         case CLEAR_PRESSED :
            return {
@@ -43,7 +51,8 @@ const calculator = (state = initialState, action) => {
            return {
                ...state,
                "output" : [action.output],
-               "input" :null
+               "input" :null,
+               "statusText":null
            };           
         default :
             return state;

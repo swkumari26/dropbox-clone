@@ -4,7 +4,7 @@ import {Table} from 'reactstrap';
 
 export default class Content extends Component {
 render(){
-  const{files,token,contentSelected,selectedName} = this.props;
+  const{files,token,contentSelected,selectedName,user} = this.props;
   console.log("files in content:",files.files);
   let path = files.absolute_path;
   console.log("props in content:",files);
@@ -17,7 +17,7 @@ render(){
         return(
           <div>
           {
-            <ContentItem name={contentItem} selectedName={selectedName} path={path} token={token} contentSelected={contentSelected}/>
+            <ContentItem name={contentItem} selectedName={selectedName} user={user} path={path} token={token} contentSelected={contentSelected}/>
           }
           </div>
           );
