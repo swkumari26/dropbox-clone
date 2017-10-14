@@ -16,7 +16,7 @@ state = {modalIsOpen:false}
    handleKeyPress = (event) => {
         if(event.key === "Enter")
         { console.log("enter pressed");
-          var folderPath = this.props.path+event.target.value ;
+          var folderPath = this.props.user.id[0]+'/'+this.props.path+event.target.value ;
           this.props.createFolder(folderPath,this.props.token);
         }
       }               
@@ -28,7 +28,7 @@ render(){
   console.log("token in contentitem:",token);
   let displayIcon,buttonOptions
   let link = '/home/'+name;
-  let pathWithName = path+name;
+  let pathWithName = user.id[0]+'/'+path+name;
   console.log("path with name in content item",pathWithName);
     if (name)
     {

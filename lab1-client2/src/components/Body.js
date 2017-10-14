@@ -13,8 +13,8 @@ import {Link}  from 'react-router-dom'
 class Body extends Component { 
    handleFileUpload = (event) => {
         const file = new FormData();
-        file.append('user', this.props.user);
-        file.append('path', this.props.files.absolute_path);
+        var pathWithID = this.props.user.id[0]+'/'+this.props.files.absolute_path;
+        file.append('path', pathWithID);
         file.append('myfile', event.target.files[0]);
         this.props.uploadFile(file,this.props.token);
     };

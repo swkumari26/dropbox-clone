@@ -28,6 +28,7 @@ exports.executeQuery=function(sqlQuery,callback){
 		}
 		else 
 		{	// return err or result
+			console.log("query executed:",sqlQuery);
 			if(sqlQuery.indexOf('insert')>-1)
 				{
 					connection.query("select last_insert_id() as id", function(err, data1) {

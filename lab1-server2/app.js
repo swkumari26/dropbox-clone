@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
@@ -12,6 +11,8 @@ var express = require('express')
   , path = require('path')
   , index = require('./routes/index')
   , user = require('./routes/user')
+  , uploadData = require('./routes/uploadData')
+  , getUserData = require('./routes/getUserData')
   ,	cors = require('cors');
 
 var app = express();
@@ -25,6 +26,8 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/user', user);
+app.use('/uploadData', uploadData);
+//app.use('/getUserData', getUserData);
 // development only
 //catch 404 and forward to error handler
 app.use(function (req, res, next) {

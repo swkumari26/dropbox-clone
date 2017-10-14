@@ -12,6 +12,20 @@ var  express = require('express')
 
 passport.use(session.strategy);
 
+router.get('/getUsers',passport.authenticate('jwt', { session: false }), function(req, res){
+	var fetchUserQuery = "select id,firstname,lastname,email from users";	
+	  databaseOperation.executeQuery(fetchUserQuery,processResult);
+		function processResult(err,data){
+			if(err){
+				throw err;
+			}
+			else
+				{
+				res.json({accounts:data});
+				}				
+		} 
+	});
+
 router.post('/signUp',function (req, res, next) {
 	console.log("req received",req.body);
 	var insertUserQuery = "INSERT INTO users (firstname,lastname,email,password) VALUES('"+req.body.firstname+"','"+req.body.lastname+"','"+req.body.email+"','"+bcrypt.hashSync(req.body.password, salt)+"')";	
@@ -43,19 +57,12 @@ router.post('/doLogin',function (req, res, next) {
 			{
 			if(data.length>0&&(bcrypt.compareSync(''+req.body.password,''+data[0].password))){
 				console.log("data received is:",data[0]);
-				getUserData.walkDir(path.join(directoryName,''+data[0].id),function(err,results){
+				getUserData.walkUserDir(data[0].id,function(err,results){
 					if(err) throw err;
 					else
 						{
-						var NewdirectoryName = path.join(directoryName,''+data[0].id);
-						NewdirectoryName = NewdirectoryName.replace(/\\\\/g, '\\');
-						for (var i=0;i<results.length;i++)
-							{
-							results[i] = results[i].replace(/\\\\/g, '\\');
-							results[i] = results[i].replace(NewdirectoryName+'/','');
-							}
 						console.log("result",results);
-						res.json({token: 'jwt '+jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),result:results});
+						res.json({user:data[0].id, token: 'jwt '+jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),result:results});
 						}});
 				
 			}

@@ -43,7 +43,7 @@ const login = (state = initialState, action) => {
             'isAuthenticated': true,
             'isAuthenticating': false,
             'statusText': 'You have been successfully logged in.',
-            'user':[action.user],
+            'user':{'id':[action.user]},
             'result':[action.result][0],
             'tree':[action.tree][0]
         };
