@@ -3,10 +3,10 @@ import { connect } from 'react-redux'
 import history from '../history';
 import LoginComponent from '../components/Login'
 import Header from '../components/Header'
-import Body from '../components/Body'
+import LogBody from '../components/LogBody'
 import { bindActionCreators } from 'redux';
 import {Link}  from 'react-router-dom'
-class Home extends Component {
+class Log extends Component {
         componentWillMount () {
             this.checkAuth(this.props.isAuthenticated);
         }
@@ -49,15 +49,14 @@ if(user){username= user.lastname+','+user.firstname;}
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/home'); }}><h4>Home </h4></Link></li>
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/log'); }}><h4>Activity Log </h4></Link></li>
    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
   </ul>
   </div>
   </div>
   <div className="col-lg-10">
-  <br/><br/>
-  <Header pageName="Home" userName={username}/>
-  <br/><br/>
-    <Body files={files} tree={tree} token={token} user={user}/>
+  <br/>
+  <Header pageName="Activity Log" userName={username}/>
+  <br/><br/><br/>
+    <LogBody files={files} tree={tree} token={token} user={user}/>
   </div>
   </div>
       )
@@ -72,4 +71,4 @@ if(user){username= user.lastname+','+user.firstname;}
         statusText:state.login.statusText
     }
     }
-export default connect(mapStateToProps, null)(Home); 
+export default connect(mapStateToProps, null)(Log); 

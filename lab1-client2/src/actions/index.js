@@ -3,7 +3,9 @@ import bcrypt from 'bcryptjs';
 import genSalt from '../utils/salt'
 import history from '../history';
 
+export const api = process.env.REACT_APP_DROPBOX || 'http://localhost:3001';
 export const LOGIN_USER_SUCCESS='LOGIN_USER_SUCCESS';
+export const SIGNUP_USER_SUCCESS='SIGNUP_USER_SUCCESS';
 export const LOGIN_USER_FAILURE='LOGIN_USER_FAILURE';
 export const LOGIN_USER_REQUEST='LOGIN_USER_REQUEST';
 export const LOGOUT_USER='LOGOUT_USER';
@@ -16,17 +18,25 @@ export const ADD_FOLDER_SPACE='ADD_FOLDER_SPACE';
 export const CONTENT_SELECTED='CONTENT_SELECTED';
 export const QUERY_SUCCESS='QUERY_SUCCESS';
 
-
 export function loginUserSuccess(data) {
   localStorage.setItem('token', data.response.token);
   var tree = buildtree(data.response.result); 
-  addMetaData(tree,data.response.contentMetaData)
   console.log("tree in action",tree); 
+  addMetaData(tree,data.response.contentMetaData)
   return {
     type: LOGIN_USER_SUCCESS,
     token:data.response.token,
     result:data.response.result,
     tree:tree,
+    user:data.response.user
+  }
+}
+
+export function signUpSuccess(data) {
+  localStorage.setItem('token', data.response.token);
+  return {
+    type: SIGNUP_USER_SUCCESS,
+    token:data.response.token,
     user:data.response.user
   }
 }
@@ -47,7 +57,8 @@ export function loginUserRequest() {
 }
 
 export function uploadSuccess(data) {
-var tree = buildtree(data.response.result);     
+var tree = buildtree(data.response.result); 
+console.log("tree in action",tree);     
 addMetaData(tree,data.response.contentMetaData)
   return {
     type: UPLOAD_SUCCESS,
@@ -98,28 +109,58 @@ export function contentSelected(path,name){
         name:name
     }
 }
+export function loginRefresh(token){
+
+    return dispatch =>{ 
+        dispatch(loginUserRequest());        
+        return fetch(`${api}/user/loginRefresh`, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+            })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(loginUserSuccess({response:{
+                                token:response.token,
+                                result:response.result,
+                                user:response.user,
+                                contentMetaData:response.contentMetaData
+                    }}));  
+                    history.push('/home');                 
+                } catch (e) {
+                    dispatch(loginUserFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Invalid token'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(loginUserFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Invalid token'
+                        }
+                    }));
+            })   
+        } 
+}
 export const loginUser = (user,signIn) => {
 	return dispatch =>{	
-	   //  // Generate salt for password encryption
-    // const salt = genSalt(user.email);
-    // // Encrypt password
-    // bcrypt.hash(user.password, salt, (err, hash) => {
-    //   // Something wrong while hashing
-    //   if (err) {
-    //     dispatch(loginUserFailure(err));
-    //     return;
-    //   }
-    //   else 
-    //   	{
         dispatch(loginUserRequest());
         if (signIn){        
-        return fetch('http://localhost:3001/user/doLogin', {
+        return fetch(`${api}/user/doLogin`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-                // body: JSON.stringify({email: user.email, password: hash})
                 body: JSON.stringify({email: user.email, password: user.password})
             })
             .then(checkHttpStatus)
@@ -143,26 +184,31 @@ export const loginUser = (user,signIn) => {
                 }
             })
             .catch(error => {
-                dispatch(loginUserFailure(error));
+                    dispatch(loginUserFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Invalid token'
+                        }
+                    }));
             })
 		}
 		else
 		{
-        return fetch('http://localhost:3001/user/signUp', {
+        return fetch(`${api}/user/signUp`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-                // body: JSON.stringify({firstname:user.firstname,lastname:user.lastname,email: user.email, password: hash})
                 body: JSON.stringify({firstname:user.firstname,lastname:user.lastname,email: user.email, password: user.password})
             })
             .then(checkHttpStatus)
             .then(parseJSON)
             .then(response => {
                 try {
-                    dispatch(loginUserSuccess({response:{
-                                token:response.token
+                    dispatch(signUpSuccess({response:{
+                                token:response.token,
+                                user:response.user
                     }}));
                     history.push('/home');
                 } catch (e) {
@@ -175,13 +221,16 @@ export const loginUser = (user,signIn) => {
                 }
             })
             .catch(error => {
-                dispatch(loginUserFailure(error));
+                    dispatch(loginUserFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Invalid token'
+                        }
+                    }));
             })			
 		}
 	}
- // });
-    }
-// }
+}
 export const itemClicked = (name) => {
     console.log("name received",name);
     history.push(name);  
@@ -190,7 +239,7 @@ export const uploadFile = (file,token) =>{
     console.log("file received in action",file);
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/uploadFile', {
+       return fetch(`${api}/uploadData/uploadFile`, {
             method: 'POST', 
             headers: {
                 'Authorization': token
@@ -220,53 +269,20 @@ export const uploadFile = (file,token) =>{
         }
   }
 
-export const downloadFile = (file,token) =>{
-    console.log("file received in action",file);
-  return dispatch => {
-    dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/uploadFile', {
-            method: 'POST', 
-            headers: {
-                'Authorization': token
-            },                       
-            body: file
-            })
-            .then(checkHttpStatus)
-            .then(parseJSON)     
-            .then(response => {
-                try {
-                    dispatch(uploadSuccess({response:{
-                                result:response.result,
-                                contentMetaData:response.contentMetaData
-                    }}));           
-                } catch (e) {
-                    dispatch(uploadFailure({
-                        response: {
-                            status: 403,
-                            statusText: 'File creation failed'
-                        }
-                    }));
-                }
-            })
-            .catch(error => {
-                dispatch(uploadFailure(error));
-            })
-        }
-  }
-
-export const createFolder = (path,token) =>{
+export const createFolder = (path,name,token,absolutePath) =>{
     console.log("folder path received in action",path);
+    console.log("absolute path received in action",absolutePath);
     console.log("token received in action",token);
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/createFolder', {
+       return fetch(`${api}/uploadData/createFolder`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': token
             },               
-            body: JSON.stringify({"folderPath":path})
+            body: JSON.stringify({"folderPath":path,"absolutePath":absolutePath,"content_name":name})
             })
             .then(checkHttpStatus)
             .then(parseJSON)       
@@ -286,7 +302,12 @@ export const createFolder = (path,token) =>{
                 }
             })
             .catch(error => {
-                dispatch(uploadFailure(error));
+                    dispatch(uploadFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Folder creation failed'
+                        }
+                    }));
             })
         }
   }
@@ -298,7 +319,7 @@ export const deleteContent = (path,token) =>{
     dispatch(uploadRequest());
         if(path.indexOf('.') > -1)
         {
-       return fetch('http://localhost:3001/uploadData/deleteFile', {
+       return fetch(`${api}/uploadData/deleteFile`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -329,7 +350,7 @@ export const deleteContent = (path,token) =>{
             })
         }
         else{
-       return fetch('http://localhost:3001/uploadData/deleteFolder', {
+       return fetch(`${api}/uploadData/deleteFolder`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -367,14 +388,14 @@ export const starContent = (path,token) =>{
     console.log("token received in action",token);
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/createFolder', {
+       return fetch(`${api}/uploadData/markStar`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': token
             },               
-            body: JSON.stringify({"folderPath":path})
+            body: JSON.stringify({"content_path":path})
             })
             .then(checkHttpStatus)
             .then(parseJSON)       
@@ -398,9 +419,14 @@ export const starContent = (path,token) =>{
             })
         }
   }
-export const shareContent = (email,accounts,name,path,token,user) =>{
+export const shareContent = (email,accounts,name,path,absolute_path,token,user) =>{
 var id;
-path=user+'/'+path;
+if(path===null){
+path=user+'/'
+}
+else{
+path = path.replace('/'+name,'');
+}
 if(email.indexOf('@')>-1)
     {
     for(var i = 0; i < accounts.length; i++)
@@ -423,12 +449,12 @@ else
     }
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/uploadData/shareContent', {
+       return fetch(`${api}/uploadData/shareContent`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': token.token
+                'Authorization': token
             },               
             body: JSON.stringify({"sharedto":id,"name":name,"path":path})
             })
@@ -457,7 +483,7 @@ else
 export const getAccounts = (token) =>{
   return dispatch => {
     dispatch(uploadRequest());
-       return fetch('http://localhost:3001/user/getUsers', {
+       return fetch(`${api}/user/getUsers`, {
             method: 'get',
             headers: {
                 'Accept': 'application/json',
@@ -487,13 +513,23 @@ export const getAccounts = (token) =>{
         }
   }   
 function addMetaData(tree,contentMetaData)
-{
-    for(var i=0;i<tree.length;i++){
-    tree[i].star = contentMetaData[tree[i].absolute_path].star;
-    tree[i].modifiedOn = contentMetaData[tree[i].absolute_path].createdOn;
-    tree[i].members = contentMetaData[tree[i].absolute_path].members;
-    tree[i].createdBy = contentMetaData[tree[i].absolute_path].createdBy;
+{   
+    console.log("tree before metadata",tree);
+    for(var j=0;j<Object.keys(contentMetaData).length;j++)
+    {
+    let contentName = contentMetaData[Object.keys(contentMetaData)[j]].content_name;
+    for(var i=0;i<Object.keys(tree).length;i++){
+        if(Object.keys(tree)[i] === contentName)
+        {
+           tree[Object.keys(tree)[i]].star =  contentMetaData[Object.keys(contentMetaData)[j]].star;
+           tree[Object.keys(tree)[i]].created_on =  contentMetaData[Object.keys(contentMetaData)[j]].created_on;
+           tree[Object.keys(tree)[i]].created_by =  contentMetaData[Object.keys(contentMetaData)[j]].created_by;
+           tree[Object.keys(tree)[i]].members =  contentMetaData[Object.keys(contentMetaData)[j]].total_shared;
+           tree[Object.keys(tree)[i]].content_path =  contentMetaData[Object.keys(contentMetaData)[j]].content_path;                    
+        }
     }
+}
+console.log("tree after adding metadata",tree);
 }
 
 function buildtree(result)
@@ -503,9 +539,10 @@ var tree = {
     absolute_path: '',
     files: [],
     star:false,
-    modifiedOn:null,
-    members:[],
-    createdBy:null
+    created_on:null,
+    members:null,
+    created_by:null,
+    content_path:null
   }
 };
 
@@ -524,17 +561,18 @@ function buildTree(parts) {
 
       lastDir = name;
       abs_path += lastDir + '/';
-
+    }
       if (!tree[name]) {
         tree[name] = {
           absolute_path: abs_path,
           files: [],
           star:false,
-          modifiedOn:null,
-          members:null          
+          created_on:null,
+          members:null,
+          created_by:null,
+          content_path:null         
         };
       }
-    }
   });
 }
 

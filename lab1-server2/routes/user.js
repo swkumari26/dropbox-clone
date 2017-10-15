@@ -36,10 +36,10 @@ router.post('/signUp',function (req, res, next) {
 			}
 			else
 				{ 
-				uploadData.createFolder(data[0].id,function handleError(err){
+				getUserData.createFolder(data[0].id,function handleError(err){
 				if(err){console.log("User directory creation failed");}	
 				});
-				res.json({token: jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey)});
+				res.json({token: jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),user:[{id:data[0].id,firstname:req.body.firstname,lastname:req.body.lastname,email:req.body.email}]});
 				}				
 		} 
 	});
@@ -57,12 +57,12 @@ router.post('/doLogin',function (req, res, next) {
 			{
 			if(data.length>0&&(bcrypt.compareSync(''+req.body.password,''+data[0].password))){
 				console.log("data received is:",data[0]);
-				getUserData.walkUserDir(data[0].id,function(err,results){
+				getUserData.walkUserDir(data[0].id,function(err,results,contentMetaData){
 					if(err) throw err;
 					else
 						{
-						console.log("result",results);
-						res.json({user:data[0].id, token: 'jwt '+jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),result:results});
+						console.log("metadata",contentMetaData);
+						res.json({user:data, token: 'jwt '+jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),result:results,contentMetaData:contentMetaData});
 						}});
 				
 			}
@@ -72,5 +72,33 @@ router.post('/doLogin',function (req, res, next) {
 			}
 	} 
 });
+
+router.get('/loginRefresh', passport.authenticate('jwt', { session: false }), function(req, res){
+	  var fetchUserQuery = "select * from users where id='"+req.user.id+"'";
+	  var directoryName = path.join(__dirname,'..','public','dropbox');
+	  console.log("directory",directoryName);
+	  databaseOperation.executeQuery(fetchUserQuery,processResult);
+		function processResult(err,data){
+			if(err){
+				throw err;
+			}
+			else
+				{
+				if(data.length>0){
+					console.log("data received is:",data);
+					getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
+						if(err) throw err;
+						else
+							{
+							console.log("metadata",contentMetaData);
+							res.json({user:data, token: 'jwt '+jwt.sign({id:req.user.id}, session.jwtOptions.secretOrKey),result:results,contentMetaData:contentMetaData});
+							}});
+				}
+				else{
+					res.status(401).json({message:"Invalid token"});
+				}
+				}
+		} 
+	});
 
 module.exports = router;

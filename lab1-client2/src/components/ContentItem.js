@@ -9,33 +9,40 @@ import { bindActionCreators } from 'redux';
 import {createFolder,deleteContent,starContent,shareContent,getAccounts} from '../actions/index';
 import { connect } from 'react-redux'
 import Modal from 'react-modal'
-
+import {api} from '../actions/index'
 
 class ContentItem extends Component { 
 state = {modalIsOpen:false}
    handleKeyPress = (event) => {
         if(event.key === "Enter")
         { console.log("enter pressed");
-          var folderPath = this.props.user.id[0]+'/'+this.props.path+event.target.value ;
-          this.props.createFolder(folderPath,this.props.token);
+
+        if ((this.props.parentpath.content_path)&&(this.props.parentpath.absolute_path)){
+          var folderPath = this.props.parentpath.content_path+'/'+event.target.value ;
+        }
+        else{
+          var folderPath = this.props.user.id+'/'+this.props.parentpath.absolute_path+event.target.value ;
+        }
+          var absolutePath = this.props.parentpath.absolute_path+event.target.value+'/'
+          this.props.createFolder(folderPath,event.target.value,this.props.token,absolutePath);
         }
       }               
 render(){  
-  const{user,name,path,token,modifiedOn,members,star,deleteContent,shareContent,starContent,accounts,getAccounts} = this.props;
+  const{user,name,parentpath,files,token,deleteContent,shareContent,starContent,accounts,getAccounts} = this.props;
   const{modalIsOpen} = this.state;
-  console.log("name in sub:",name);
-  console.log("path in contentitem:",path);
-  console.log("token in contentitem:",token);
   let displayIcon,buttonOptions
   let link = '/home/'+name;
-  let pathWithName = user.id[0]+'/'+path+name;
-  console.log("path with name in content item",pathWithName);
+  let pathWithName;
+  if(files)
+  {
+  pathWithName = files.content_path 
+  }
     if (name)
     {
   	if (name.indexOf('.') > -1)
   		{	
 
-      if(star)
+      if(files.star)
           {        
         if(name.indexOf('pdf') > -1)
         {
@@ -67,14 +74,17 @@ render(){
       }
         buttonOptions = (<div>
           <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault();getAccounts({token});this.setState({modalIsOpen:true});}}>Share</button>
-          <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); deleteContent(pathWithName,token); }}>Delete</button>
-          <a className="btn btn-default btn-sm" href={"http://localhost:3001/dropbox/"+40+"/"+path+"/"+name} download>Download</a>
-          <button className="btn btn-default btn-sm">Star</button>
+          {
+          (files.created_by===user.id)?
+          (<button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); deleteContent(pathWithName,token); }}>Delete</button>):""
+          }
+          <a className="btn btn-default btn-sm" href={`{api}/dropbox/`+pathWithName} download>Download</a>
+          <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); starContent(pathWithName,token); }}>Star</button>
           </div>
           )               
     		}
     	else{
-        if(star)
+        if(files.star)
         {
   			displayIcon = (
         <Link to="" onClick={(e) => {e.preventDefault(); history.push(link); }}><FolderIcon size={50}/><span>{name}    </span><StarIcon size={20}/></Link>
@@ -87,8 +97,11 @@ render(){
       }
         buttonOptions = (<div>
           <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault();getAccounts({token});this.setState({modalIsOpen:true});}}>Share</button>
-          <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); deleteContent(pathWithName,token); }}>Delete</button>
-          <button className="btn btn-default btn-sm">Star</button>
+          {
+          (files.created_by===user.id)?
+          (<button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); deleteContent(pathWithName,token); }}>Delete</button>):""
+          }          
+          <button className="btn btn-default btn-sm" onClick={(e) => {e.preventDefault(); starContent(pathWithName,token); }}>Star</button>
           </div>
           )        
       }
@@ -106,14 +119,13 @@ render(){
     <td className="col-lg-4 col-md-4 col-sm-4">
     {displayIcon}
   	</td>
-    <td className="col-lg-2 col-md-2 col-sm-2">
-    {modifiedOn}
-    </td>
-    <td className="col-lg-2 col-md-2 col-sm-2">
-    {members}
-    </td> 
     <td className="col-lg-4 col-md-4 col-sm-4">
+    {(files)?(files.created_on):""}
+    </td>   
+    <td className="col-lg-4 col-md-4 col-sm-4">
+    <div className="float:right">
       {buttonOptions}        
+    </div>
     </td>
     </tr> 
     </table> 
@@ -137,7 +149,7 @@ render(){
     <hr/>
     <Link to="">Create link to share</Link>
     <hr/>
-    <button className="btn btn-primary" onClick={(e) => {e.preventDefault();shareContent(this.input.value,accounts,name,path,token,user.id);}}>Share</button>
+    <button className="btn btn-primary" onClick={(e) => {e.preventDefault();shareContent(this.input.value,accounts,name,files.content_path,files.absolute_path,token,user.id);this.setState({modalIsOpen:false});}}>Share</button>
     </div>
     </Modal>
     </div>   

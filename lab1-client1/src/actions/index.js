@@ -54,14 +54,6 @@ export function calculateFailure(error) {
 export function calculate(input){
     console.log("input received in action",input);
     if(input){
-    var inputToServer ='';
-    for(var i=0;i<input.length;i++)
-    {
-        if((input[i]==="+")||(input[i]==="-")||(input[i]==="*")||(input[i]==="/"))
-            inputToServer +=' '+input[i]+' '; 
-        else
-            inputToServer +=input[i];
-    }
   return dispatch => {
        return fetch('http://localhost:3001/calculator/calculate', {
             method: 'POST', 
@@ -69,7 +61,7 @@ export function calculate(input){
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-                body: JSON.stringify({input:inputToServer})
+                body: JSON.stringify({input:input})
             })
             .then(checkHttpStatus)
             .then(parseJSON)     

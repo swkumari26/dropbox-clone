@@ -28,18 +28,19 @@ exports.executeQuery=function(sqlQuery,callback){
 		}
 		else 
 		{	// return err or result
+			var user = data;
 			console.log("query executed:",sqlQuery);
-			if(sqlQuery.indexOf('insert')>-1)
-				{
+			if((sqlQuery.indexOf('INSERT')>-1)&&(sqlQuery.indexOf('users')>-1))
+				{	console.log("inside user create nested query:");
 					connection.query("select last_insert_id() as id", function(err, data1) {
 						if(err){
 							console.log("ERROR: " + err.message);
 						}
 						else
-						{
+						{	
 							if(data[0]) data[0].id=data1[0].id;
 							else data=data1;
-							callback(err, data);
+							callback(err,data);
 						}
 						console.log("\nConnection released after nested query..");
 						connection.release();

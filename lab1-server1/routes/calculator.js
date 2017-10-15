@@ -7,7 +7,16 @@ router.post('/calculate', function (req, res, next) {
     var operators = [];
     var number,errflag;
     var result;
-    var input = req.body.input.split(" ");
+    var input=req.body.input;
+    var inputToServer ='';
+    for(var i=0;i<input.length;i++)
+    {
+        if((input[i]==="+")||(input[i]==="-")||(input[i]==="*")||(input[i]==="/"))
+            inputToServer +=' '+input[i]+' '; 
+        else
+            inputToServer +=input[i];
+    }
+    input=inputToServer;
     console.log("input recieved",input)
     for(var i=0;i<input.length;i++)
     	{

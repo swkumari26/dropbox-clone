@@ -13,18 +13,27 @@ import {Link}  from 'react-router-dom'
 class Body extends Component { 
    handleFileUpload = (event) => {
         const file = new FormData();
-        var pathWithID = this.props.user.id[0]+'/'+this.props.files.absolute_path;
-        file.append('path', pathWithID);
+        if (this.props.files.content_path){
+        var content_path = this.props.files.content_path+'/';
+      }
+      else{
+        var content_path = this.props.user.id+'/'+this.props.files.absolute_path;
+      }
+        var absolute_path = this.props.files.absolute_path;
+        file.append('path', content_path);
+        file.append('absolutepath', absolute_path);
         file.append('myfile', event.target.files[0]);
         this.props.uploadFile(file,this.props.token);
     };
 render(){
-  const{uploadFile,files,user,token} = this.props; 
+  const{uploadFile,files,user,token,tree} = this.props; 
+    console.log("files in body",files); 
   return(
     <div className="row">
     <div className="col-lg-9">
-    { 
-      <Content files={files} token={token} user={user}/>
+    {
+    (Object.keys(files).length===0)?" ":     
+      (<Content files={files} tree={tree} token={token} user={user}/>)
     }
     </div>
   <div className="col-lg-3">
@@ -37,7 +46,7 @@ render(){
           <button type="submit" className="btn btn-primary btn-block btn-lg">Upload files</button> 
         </div>  
         <br/> 
-      <li><button className="buttonlink" onClick={() => {files.files.includes("")?"":this.setState({files:files.files.push("")});}}><NewFolder size={30}/><span> New folder </span></button></li>
+      <li><button className="buttonlink" onClick={() => {(Object.keys(files).length===0)?" ":(files.files.includes("")?"":this.setState({files:files.files.push("")}));}}><NewFolder size={30}/><span> New folder </span></button></li>
       </ul>
     </div>
     </div>

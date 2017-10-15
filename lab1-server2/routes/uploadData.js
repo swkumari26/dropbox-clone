@@ -27,25 +27,21 @@ var storage = multer.diskStorage({
 
 var upload = multer({storage: storage, dest: "./public/dropbox/"});
 
-
-exports.createFolder = function(folderPath,callback){
-	folderPath = path.join(__dirname,'../public/dropbox/'+folderPath);	
-	console.log("path received",folderPath);
-	mkdirp(folderPath, function (err) {
-	    if (err) console.error(err)
-	    else console.log('pow!')		
-		callback(err);
-	});	
-};
-
 router.post('/uploadFile', upload.single('myfile'), passport.authenticate('jwt', { session: false }), function(req, res){
 	var directoryName = path.join(__dirname,'..','public','dropbox');
 	console.log(req.body.path);
     console.log("checking user id",req.user.id);
     console.log(req.file);
     var contentPath = req.body.path+req.file.originalname;
+    console.log("absolutepath received in file upload",req.body.absolutepath);
+    if(req.body.absolutepath){
+    var absolutePath = req.body.absolutepath+req.file.originalname+'/';
+    }
+    else{
+    	absolutePath="";
+    }
     var filePath = path.join(__dirname,'..','public','dropbox',''+req.body.path);	 
-	var insertContent = "insert into content (created_by,content_path) values ( '"+req.user.id+"','"+contentPath+"')";
+	var insertContent = "insert into content (created_by,content_path,user_absolute_path,content_name) values ( '"+req.user.id+"','"+contentPath+"','"+absolutePath+"','"+req.file.originalname+"')";
 		  console.log("insert query for create file",insertContent);
 		  databaseOperation.executeQuery(insertContent,processResult);
 			function processResult(err,data){
@@ -55,11 +51,11 @@ router.post('/uploadFile', upload.single('myfile'), passport.authenticate('jwt',
 		    else 
 		    {   
 		    	console.log('Folder created Successfully');
-				getUserData.walkUserDir(req.user.id,function(err,results){
+				getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 					if(err) throw err;
 					else
 						{
-						res.json({result:results});
+						res.json({result:results,contentMetaData:contentMetaData});
 						}
 					});	    	
 		    }	
@@ -95,7 +91,7 @@ router.post('/createFolder', passport.authenticate('jwt', { session: false }), f
 	    if (err) {console.error(err);}
 	    else 
 	    {   
-	    	var insertContent = "insert into content (created_by,content_path) values ( '"+req.user.id+"','"+req.body.folderPath+"')";
+	    	var insertContent = "insert into content (created_by,content_path,user_absolute_path,content_name) values ( '"+req.user.id+"','"+req.body.folderPath+"','"+req.body.absolutePath+"','"+req.body.content_name+"')";
 			  console.log("insert query for create file",insertContent);
 			  databaseOperation.executeQuery(insertContent,processResult);
 				function processResult(err,data){
@@ -105,11 +101,11 @@ router.post('/createFolder', passport.authenticate('jwt', { session: false }), f
 			    else 
 			    {   
 			    	console.log('Folder created Successfully');
-					getUserData.walkUserDir(req.user.id,function(err,results){
+					getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 						if(err) throw err;
 						else
 							{
-							res.json({result:results});
+							res.json({result:results,contentMetaData:contentMetaData});
 							}
 						});	    	
 			    }	
@@ -121,22 +117,32 @@ router.post('/deleteFile', passport.authenticate('jwt', { session: false }), fun
 	var directoryName = path.join(__dirname,'..','public','dropbox');
 	console.log("req received",req.body);
 	console.log("req",req.user);
-	filePath = path.join(__dirname,'..','public','dropbox',''+req.user.id,''+req.body.filePath);	
+	filePath = path.join(__dirname,'..','public','dropbox',''+req.body.filePath);	
 	console.log("path received",filePath);
 	fs.unlink(filePath, function (err) {
 	    if (err) {console.error(err);}
 	    else 
-	    {   
-	    	console.log('File deleted Successfully');
-			getUserData.walkUserDir(req.user.id,function(err,results){
-				if(err) throw err;
-				else
-					{
-					console.log("result",results);
-					res.json({result:results});
-					}
-				});	    	
-	    }		
+	    	{
+	    	var deleteContent = "delete from content where content_path ='"+folderPath+"'";
+		  console.log("delete query for content star",deleteContent);
+		  databaseOperation.executeQuery(deleteContent,processResult);
+			function processResult(err,data){
+				if(err){
+					console.log("error in deleting content");
+				}	
+		    else 
+		    {   	    	
+  	console.log('Folder deleted Successfully');
+		getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
+			if(err) throw err;
+			else
+				{
+				res.json({result:results,contentMetaData:contentMetaData});
+				}
+			});	    	
+		    }
+			}
+  }
 	});
 });
 
@@ -150,17 +156,27 @@ router.post('/deleteFolder', passport.authenticate('jwt', { session: false }), f
 	    if (err) {console.error(err);}
 	    else 
 	    {   
+	    	var deleteContent = "delete from content where content_path ='"+folderPath+"'";
+			  console.log("delete query for content star",deleteContent);
+			  databaseOperation.executeQuery(deleteContent,processResult);
+				function processResult(err,data){
+					if(err){
+						console.log("error in deleting content");
+					}	
+			    else 
+			    {   	    	
 	    	console.log('Folder deleted Successfully');
-			getUserData.walkUserDir(req.user.id,function(err,results){
+			getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 				if(err) throw err;
 				else
 					{
-					console.log("result",results);
-					res.json({result:results});
+					res.json({result:results,contentMetaData:contentMetaData});
 					}
 				});	    	
-	    }		
-	});
+			    }
+				}
+	    }
+		});
 });
 
 router.post('/shareContent', passport.authenticate('jwt', { session: false }), function(req, res){
@@ -176,15 +192,39 @@ router.post('/shareContent', passport.authenticate('jwt', { session: false }), f
 	    else 
 	    {   
 	    	console.log('Content shared Successfully');
-			getUserData.walkUserDir(req.user.id,function(err,results){
+			getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 				if(err) throw err;
 				else
 					{
-					res.json({result:results});
+					res.json({result:results,contentMetaData:contentMetaData});
 					}
-				});	    	
+				});		    	
 	    }	
 	}
+});
+
+router.post('/markStar', passport.authenticate('jwt', { session: false }), function(req, res){
+	var directoryName = path.join(__dirname,'..','public','dropbox');
+	console.log("content path received",req.body.content_path);  
+	    	var updateContent = "update content set star = 1 where content_path ='"+req.body.content_path+"'";
+			  console.log("update query for content star",updateContent);
+			  databaseOperation.executeQuery(updateContent,processResult);
+				function processResult(err,data){
+					if(err){
+						console.log("error in marking star");
+					}	
+			    else 
+			    {   
+			    	console.log('Star marked Successfully');
+					getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
+						if(err) throw err;
+						else
+							{
+							res.json({result:results,contentMetaData:contentMetaData});
+							}
+						});	    	
+			    }	
+			}	    		
 });
 
 module.exports = router;
