@@ -35,7 +35,7 @@ var walkDir = function(dir, callback) {
 exports.walkUserDir = function(dir,callback){
 	var resultsSharedFinal = [];
 	var directoryName = path.join(__dirname,'..','public','dropbox');
-	  var fetchContentQuery = "select * from content";
+	  var fetchContentQuery = "select * from content order by created_on desc";
 	  databaseOperation.executeQuery(fetchContentQuery,processResult);
 		function processResult(err,data){
 			if(err){
@@ -44,7 +44,6 @@ exports.walkUserDir = function(dir,callback){
 			}
 			else
 				{	
-					
 					var contentMetaData = data;
 					walkDir(path.join(directoryName,''+dir),function(err,results){
 						if(err) callback(err,null,null);

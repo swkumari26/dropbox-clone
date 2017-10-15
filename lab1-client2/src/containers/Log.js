@@ -21,30 +21,14 @@ class Log extends Component {
             }
         }  
   render() {
-  const{tree,token,user,statusText} = this.props; 
-var files={};
-console.log("tree in home is:",tree)
-  console.log("parameters at home",this.props.match.params.folder);
-  if(tree)
-  {
-  if(this.props.match.params.folder)
-  {
-    files = tree[this.props.match.params.folder];
-    console.log("files in home",files); 
-  }   
-  else
-  {
-    files = tree.root;
-    console.log("files in home",files); 
-  }
-}
+const{tree,token,user,statusText,log,star} = this.props; 
 let username;
 if(user){username= user.lastname+','+user.firstname;}
   return(
     <div className="row-fluid">
     <div className="col-lg-2">
     <div className="navbar navbar-fixed-left">
-  <ul className="nav navbar-nav pull-left">
+    <ul className="nav navbar-nav pull-left">
     <li><a href="#home"><i className="fa fa-home"></i><span> <img src="https://cfl.dropboxstatic.com/static/images/favicon-vflk5FiAC.ico"></img> </span></a></li>
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/home'); }}><h4>Home </h4></Link></li>
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/log'); }}><h4>Activity Log </h4></Link></li>
@@ -56,7 +40,7 @@ if(user){username= user.lastname+','+user.firstname;}
   <br/>
   <Header pageName="Activity Log" userName={username}/>
   <br/><br/><br/>
-    <LogBody files={files} tree={tree} token={token} user={user}/>
+    <LogBody tree={tree} log={log} star={star} token={token} user={user}/>
   </div>
   </div>
       )
@@ -68,6 +52,8 @@ if(user){username= user.lastname+','+user.firstname;}
         token: state.login.token,
         isAuthenticated: state.login.isAuthenticated,
         tree:state.login.tree,
+        log:state.login.log,
+        star:state.login.star,
         statusText:state.login.statusText
     }
     }

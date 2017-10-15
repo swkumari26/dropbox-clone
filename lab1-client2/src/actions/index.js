@@ -20,15 +20,17 @@ export const QUERY_SUCCESS='QUERY_SUCCESS';
 
 export function loginUserSuccess(data) {
   localStorage.setItem('token', data.response.token);
-  var tree = buildtree(data.response.result); 
+  var tree = buildtree(data.response.result),log=[],star=[]; 
   console.log("tree in action",tree); 
-  addMetaData(tree,data.response.contentMetaData)
+  addMetaData(tree,data.response.contentMetaData,log,star)
   return {
     type: LOGIN_USER_SUCCESS,
     token:data.response.token,
     result:data.response.result,
     tree:tree,
-    user:data.response.user
+    user:data.response.user,
+    log,
+    star
   }
 }
 
@@ -57,13 +59,15 @@ export function loginUserRequest() {
 }
 
 export function uploadSuccess(data) {
-var tree = buildtree(data.response.result); 
+var tree = buildtree(data.response.result),log=[],star=[]; 
 console.log("tree in action",tree);     
-addMetaData(tree,data.response.contentMetaData)
+addMetaData(tree,data.response.contentMetaData,log,star)
   return {
     type: UPLOAD_SUCCESS,
     result:data.response.result,
-    tree:tree
+    tree:tree,
+    log,
+    star
   }
 }
 
@@ -131,7 +135,7 @@ export function loginRefresh(token){
                                 user:response.user,
                                 contentMetaData:response.contentMetaData
                     }}));  
-                    history.push('/home');                 
+                    history.push('/log');                 
                 } catch (e) {
                     dispatch(loginUserFailure({
                         response: {
@@ -512,7 +516,7 @@ export const getAccounts = (token) =>{
             })
         }
   }   
-function addMetaData(tree,contentMetaData)
+function addMetaData(tree,contentMetaData,log,star)
 {   
     console.log("tree before metadata",tree);
     for(var j=0;j<Object.keys(contentMetaData).length;j++)
@@ -520,7 +524,10 @@ function addMetaData(tree,contentMetaData)
     let contentName = contentMetaData[Object.keys(contentMetaData)[j]].content_name;
     for(var i=0;i<Object.keys(tree).length;i++){
         if(Object.keys(tree)[i] === contentName)
-        {
+        {  log.push(Object.keys(tree)[i]);
+            if(contentMetaData[Object.keys(contentMetaData)[j]].star){
+                star.push(Object.keys(tree)[i]);
+            }
            tree[Object.keys(tree)[i]].star =  contentMetaData[Object.keys(contentMetaData)[j]].star;
            tree[Object.keys(tree)[i]].created_on =  contentMetaData[Object.keys(contentMetaData)[j]].created_on;
            tree[Object.keys(tree)[i]].created_by =  contentMetaData[Object.keys(contentMetaData)[j]].created_by;

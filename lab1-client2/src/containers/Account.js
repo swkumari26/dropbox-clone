@@ -6,7 +6,8 @@ import LoginComponent from '../components/Login'
 import Header from '../components/Header'
 import Body from '../components/Body'
 import { bindActionCreators } from 'redux';
-import {Link}  from 'react-router-dom'
+import {Link}  from 'react-router-dom';
+import PieChart from 'react-minimal-pie-chart';
 class Account extends Component {
         componentWillMount () {
             this.checkAuth(this.props.isAuthenticated);
@@ -65,7 +66,21 @@ class Account extends Component {
             </tr>             
         </table>        
       </div>
-    <div className="jumbotron">Interests</div>
+    <div className="col-lg-6 col-md-6 col-sm-6">
+      <div className="jumbotron">Life events</div>
+      <h5>Number of content created {user.no_content_created} </h5>
+      <h5>Number of content deleted {user.no_content_deleted} </h5>
+      <h5>Number of content shared {user.no_content_shared} </h5>
+      <PieChart radius='25'
+      data={[
+      { value: user.no_content_created, key: 1, color: '#E38627' },
+      { value: user.no_content_deleted, key: 2, color: '#C13C37' },
+      { value: user.no_content_shared, key: 3, color: '#6A2135' },
+      ]}
+      />    
+    </div> 
+    <div className="col-lg-6 col-md-6 col-sm-6">
+      <div className="jumbotron">Interests</div>
       <div>
         <table className="table">
             <tr>
@@ -97,60 +112,10 @@ class Account extends Component {
               </td> 
             </tr> 
         </table>                      
-      </div> 
-    <div className="jumbotron">Life events</div> 
-        <table className="table">
-            <tr>
-              <td className="col-lg-6 col-md-6 col-sm-6">
-              Total Number of content created or uploaded(including file and folder)
-              </td>
-              <td className="col-lg-6 col-md-6 col-sm-6 float-right">
-              {}
-              </td> 
-            </tr> 
-        </table> 
-        <table className="table">
-            <tr>
-              <td className="col-lg-6 col-md-6 col-sm-6">
-              Total Number of files downloaded
-              </td>
-              <td className="col-lg-6 col-md-6 col-sm-6 float-right">
-              {}
-              </td> 
-            </tr> 
-        </table> 
-        <table className="table">
-            <tr>
-              <td className="col-lg-6 col-md-6 col-sm-6">
-              Total Number of contents deleted
-              </td>
-              <td className="col-lg-6 col-md-6 col-sm-6 float-right">
-              {}
-              </td> 
-            </tr> 
-        </table>  
-        <table className="table">
-            <tr>
-              <td className="col-lg-6 col-md-6 col-sm-6">
-              Total Number of contents shared
-              </td>
-              <td className="col-lg-6 col-md-6 col-sm-6 float-right">
-              {}
-              </td> 
-            </tr> 
-        </table>    
-        <table className="table">
-            <tr>
-              <td className="col-lg-6 col-md-6 col-sm-6">
-              Total Number of contents marked star
-              </td>
-              <td className="col-lg-6 col-md-6 col-sm-6 float-right">
-              {}
-              </td> 
-            </tr> 
-        </table> 
+      </div>    
+    </div> 
     </div>)
-    }
+    }  
     </div>
     <div className="col-lg-3">
       <div className="float-right"></div>

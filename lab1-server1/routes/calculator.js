@@ -16,8 +16,10 @@ router.post('/calculate', function (req, res, next) {
         else
             inputToServer +=input[i];
     }
+    console.log("input is:",inputToServer);
     input=inputToServer;
     console.log("input recieved",input)
+    input=input.split(' ');
     for(var i=0;i<input.length;i++)
     	{
     	if((input[i]==='+')||(input[i]==='-')||(input[i]==='*')||(input[i]==='/'))

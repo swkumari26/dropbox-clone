@@ -11,7 +11,9 @@ const initialState = {
     result: [],
     tree:null,
     contentSelected:{name:null,path:null},
-    accounts:[{id:null,firstname:null,lastname:null,email:null},{id:null,firstname:null,lastname:null,email:null}]
+    accounts:[{id:null,firstname:null,lastname:null,email:null},{id:null,firstname:null,lastname:null,email:null}],
+    log:[],
+    star:[]
 };
 
 const login = (state = initialState, action) => {
@@ -32,7 +34,9 @@ const login = (state = initialState, action) => {
             'statusText': 'You have been successfully logged in.',
             'user':[action.user][0],
             'result':[action.result][0],
-            'tree':[action.tree][0]
+            'tree':[action.tree][0],
+            'log':[action.log][0],
+            'star':[action.star][0]
         };
         case SIGNUP_USER_SUCCESS:        
         return{
@@ -66,7 +70,9 @@ const login = (state = initialState, action) => {
         return{
             ...state,
             'result': [action.result],
-            'tree':[action.tree][0]
+            'tree':[action.tree][0],
+            'log':[action.log][0],
+            'star':[action.star][0]
         }; 
         case QUERY_SUCCESS:        
         return{

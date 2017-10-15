@@ -50,6 +50,14 @@ router.post('/uploadFile', upload.single('myfile'), passport.authenticate('jwt',
 				}	
 		    else 
 		    {   
+		    	var logQuery = "update users set no_content_created = no_content_created + 1 where id='"+req.user.id+"'";
+				  databaseOperation.executeQuery(logQuery,processResult);
+					function processResult(err,data){
+						if(err){
+							console.log("error in creating file");
+						}	
+				    else 
+				    {   		    	
 		    	console.log('Folder created Successfully');
 				getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 					if(err) throw err;
@@ -59,7 +67,9 @@ router.post('/uploadFile', upload.single('myfile'), passport.authenticate('jwt',
 						}
 					});	    	
 		    }	
-			}		
+			}
+		    }
+			}
 	});
 
 router.get('/downloadFile', function (req, res, next) {
@@ -100,6 +110,14 @@ router.post('/createFolder', passport.authenticate('jwt', { session: false }), f
 					}	
 			    else 
 			    {   
+			    	var logQuery = "update users set no_content_created = no_content_created + 1 where id='"+req.user.id+"'";
+					  databaseOperation.executeQuery(logQuery,processResult);
+						function processResult(err,data){
+							if(err){
+								console.log("error in creating file");
+							}	
+					    else 
+					    {   		    	
 			    	console.log('Folder created Successfully');
 					getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 						if(err) throw err;
@@ -109,9 +127,11 @@ router.post('/createFolder', passport.authenticate('jwt', { session: false }), f
 							}
 						});	    	
 			    }	
-				}	    	
-	    }		
-	});
+				}
+			    }
+				}
+	    }
+		});
 });
 router.post('/deleteFile', passport.authenticate('jwt', { session: false }), function(req, res){
 	var directoryName = path.join(__dirname,'..','public','dropbox');
@@ -132,17 +152,27 @@ router.post('/deleteFile', passport.authenticate('jwt', { session: false }), fun
 				}	
 		    else 
 		    {   	    	
-  	console.log('Folder deleted Successfully');
-		getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
-			if(err) throw err;
-			else
-				{
-				res.json({result:results,contentMetaData:contentMetaData});
-				}
-			});	    	
-		    }
+		    	var logQuery = "update users set no_content_deleted = no_content_deleted + 1 where id='"+req.user.id+"'";
+				  databaseOperation.executeQuery(logQuery,processResult);
+					function processResult(err,data){
+						if(err){
+							console.log("error in creating file");
+						}	
+				    else 
+				    {   		    	
+		    	console.log('Folder created Successfully');
+				getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
+					if(err) throw err;
+					else
+						{
+						res.json({result:results,contentMetaData:contentMetaData});
+						}
+					});	    	
+				    }	
+					}
+		    	}
 			}
-  }
+	    	}
 	});
 });
 
@@ -165,14 +195,24 @@ router.post('/deleteFolder', passport.authenticate('jwt', { session: false }), f
 					}	
 			    else 
 			    {   	    	
-	    	console.log('Folder deleted Successfully');
-			getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
-				if(err) throw err;
-				else
-					{
-					res.json({result:results,contentMetaData:contentMetaData});
-					}
-				});	    	
+			    	var logQuery = "update users set no_content_deleted = no_content_deleted + 1 where id='"+req.user.id+"'";
+					  databaseOperation.executeQuery(logQuery,processResult);
+						function processResult(err,data){
+							if(err){
+								console.log("error in creating file");
+							}	
+					    else 
+					    {   		    	
+			    	console.log('Folder created Successfully');
+					getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
+						if(err) throw err;
+						else
+							{
+							res.json({result:results,contentMetaData:contentMetaData});
+							}
+						});	    	
+			    }	
+				}
 			    }
 				}
 	    }
@@ -191,16 +231,26 @@ router.post('/shareContent', passport.authenticate('jwt', { session: false }), f
 			}	
 	    else 
 	    {   
-	    	console.log('Content shared Successfully');
+	    	var logQuery = "update users set no_content_shared = no_content_shared + 1 where id='"+req.user.id+"'";
+			  databaseOperation.executeQuery(logQuery,processResult);
+				function processResult(err,data){
+					if(err){
+						console.log("error in creating file");
+					}	
+			    else 
+			    {   		    	
+	    	console.log('Folder created Successfully');
 			getUserData.walkUserDir(req.user.id,function(err,results,contentMetaData){
 				if(err) throw err;
 				else
 					{
 					res.json({result:results,contentMetaData:contentMetaData});
 					}
-				});		    	
+				});	    	
 	    }	
-	}
+		}
+	    }
+		}
 });
 
 router.post('/markStar', passport.authenticate('jwt', { session: false }), function(req, res){

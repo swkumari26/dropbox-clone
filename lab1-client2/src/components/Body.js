@@ -46,7 +46,7 @@ render(){
           <button type="submit" className="btn btn-primary btn-block btn-lg">Upload files</button> 
         </div>  
         <br/> 
-      <li><button className="buttonlink" onClick={() => {(Object.keys(files).length===0)?" ":(files.files.includes("")?"":this.setState({files:files.files.push("")}));}}><NewFolder size={30}/><span> New folder </span></button></li>
+      <li><button className="buttonlink" onClick={() => {(Object.keys(files).length===0)?" ":(this.setState({files:files.files.push("")}));}}><NewFolder size={30}/><span> New folder </span></button></li>
       </ul>
     </div>
     </div>

@@ -13,7 +13,7 @@ render(){
         return(
           <div>
           {
-            <ContentItem name={contentItem} parentpath={files} files={tree[contentItem]} selectedName={selectedName} user={user} token={token}/>
+            <ContentItem name={contentItem} parentpath={files} files={tree[contentItem]} user={user} token={token}/>
           }
           </div>
           );
