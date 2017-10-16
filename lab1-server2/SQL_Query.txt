@@ -1,9 +1,11 @@
 1. create database cmpe273lab1server2;
 2. create table users (id int not null auto_increment,firstname varchar(30),lastname varchar(30),email varchar(50),password binary(60), primary key(id));
 3. create table user_log(id int not null,no_content_create int, no_content_delete int,no_content_star int,no_content_share int);
-4. create table content (created_by int not null,content_path varchar(100) not null, deleted varchar(1),created_on date, total_shared int,star varchar(1) primary key(id,content_path));
+4. create table content (created_by int not null,content_path varchar(100) not null, deleted varchar(1),created_on date, total_shared int,star varchar(1) primary key(created_by,content_path));
 5. create table shared_content (shared_to_id int not null, content_path varchar(100) not null, content_name varchar(50),deleted varchar(1),created_on date, star varchar(1) ,primary key(shared_to_id,content_path));
-6. create table group (group_id int not null auto_increment, group_name varchar(30), created_by int not null, deleted varchar(1), primary key(group_id));
-7. create table user_group(group_id not null,user_id not null);
 
+
+
+
+Shim, Simon S.Y.
 

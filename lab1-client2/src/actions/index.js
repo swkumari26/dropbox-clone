@@ -210,9 +210,11 @@ export const loginUser = (user,signIn) => {
             .then(parseJSON)
             .then(response => {
                 try {
-                    dispatch(signUpSuccess({response:{
+                    dispatch(loginUserSuccess({response:{
                                 token:response.token,
-                                user:response.user
+                                result:response.result,
+                                user:response.user,
+                                contentMetaData:response.contentMetaData
                     }}));
                     history.push('/home');
                 } catch (e) {
@@ -239,7 +241,7 @@ export const itemClicked = (name) => {
     console.log("name received",name);
     history.push(name);  
 }
-export const uploadFile = (file,token) =>{
+export const uploadFile = (file,token,tree) =>{
     console.log("file received in action",file);
   return dispatch => {
     dispatch(uploadRequest());

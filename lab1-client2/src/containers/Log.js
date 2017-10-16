@@ -37,14 +37,20 @@ if(user){username= user.lastname+','+user.firstname;}
   </div>
   </div>
   <div className="col-lg-10">
+          <div className="row justify-content-md-center">
+          <h4>{statusText}</h4>
+        </div> 
   <br/>
-  <Header pageName="Activity Log" userName={username}/>
+  <Header pageName="Activity Log" userName={username} token={token}/>
   <br/><br/><br/>
+  <div>
+  { (!tree)?"":
     <LogBody tree={tree} log={log} star={star} token={token} user={user}/>
+  }
+    </div>
   </div>
   </div>
-      )
-      }
+      )}
   }
   function mapStateToProps(state) {
     return{

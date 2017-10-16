@@ -49,13 +49,15 @@ if(user){username= user.lastname+','+user.firstname;}
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/home'); }}><h4>Home </h4></Link></li>
    <li><Link to="" onClick={(e) => {e.preventDefault(); history.push('/log'); }}><h4>Activity Log </h4></Link></li>
    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
   </ul>
   </div>
   </div>
   <div className="col-lg-10">
+          <div className="row justify-content-md-center">
+          <h4>{statusText}</h4>
+        </div> 
   <br/><br/>
-  <Header pageName="Home" userName={username}/>
+  <Header pageName="Home" userName={username} token={token}/>
   <br/><br/>
     <Body files={files} tree={tree} token={token} user={user}/>
   </div>

@@ -23,7 +23,9 @@ class Account extends Component {
             }
         }  
   render() {
-  const{token,user} = this.props; 
+  const{token,user,statusText} = this.props; 
+let username;
+if(user){username= user.lastname+','+user.firstname;}  
   return(
   <div className="row-fluid">
       <div className="col-lg-2">
@@ -37,7 +39,10 @@ class Account extends Component {
       </div>
       </div>
   <div className="col-lg-10">
-  <Header pageName="Account"/>
+          <div className="row justify-content-md-center">
+          <h4>{statusText}</h4>
+        </div> 
+  <Header pageName="Account" userName={username} token={token}/>
   <div className = "row">
   <div className="col-lg-9 col-md-9 col-sm-9">
     {
@@ -130,7 +135,9 @@ class Account extends Component {
     return{
         user:state.login.user[0],
         token: state.login.token,
-        isAuthenticated: state.login.isAuthenticated
+        isAuthenticated: state.login.isAuthenticated,
+        tree:state.login.tree,
+        statusText:state.login.statusText
     }
     }
 export default connect(mapStateToProps, null)(Account); 

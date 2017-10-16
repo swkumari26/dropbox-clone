@@ -28,6 +28,7 @@ router.get('/getUsers',passport.authenticate('jwt', { session: false }), functio
 
 router.post('/signUp',function (req, res, next) {
 	console.log("req received",req.body);
+	var results=[],contentMetaData=[];
 	var insertUserQuery = "INSERT INTO users (firstname,lastname,email,password) VALUES('"+req.body.firstname+"','"+req.body.lastname+"','"+req.body.email+"','"+bcrypt.hashSync(req.body.password, salt)+"')";	
 	  databaseOperation.executeQuery(insertUserQuery,processResult);
 		function processResult(err,data){
@@ -39,7 +40,9 @@ router.post('/signUp',function (req, res, next) {
 				getUserData.createFolder(data[0].id,function handleError(err){
 				if(err){console.log("User directory creation failed");}	
 				});
-				res.json({token: jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),user:[{id:data[0].id,firstname:req.body.firstname,lastname:req.body.lastname,email:req.body.email}]});
+				console.log("id before user sign up response", data[0].id);
+				res.json({user:[{'id':data[0].id,'firstname':req.body.firstname,'lastname':req.body.lastname,'email':req.body.email,'no_content_deleted':'0','no_content_shared':'0','no_content_created':'0'}], token: 'jwt '+jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),result:results,contentMetaData:contentMetaData});
+//				res.json({token: jwt.sign({id:data[0].id}, session.jwtOptions.secretOrKey),user:[{id:data[0].id,firstname:req.body.firstname,lastname:req.body.lastname,email:req.body.email}]});
 				}				
 		} 
 	});
