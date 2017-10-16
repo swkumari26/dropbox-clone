@@ -143,7 +143,7 @@ router.post('/deleteFile', passport.authenticate('jwt', { session: false }), fun
 	    if (err) {console.error(err);}
 	    else 
 	    	{
-	    	var deleteContent = "delete from content where content_path ='"+folderPath+"'";
+	    	var deleteContent = "delete from content where content_path ='"+req.body.filePath+"'";
 		  console.log("delete query for content star",deleteContent);
 		  databaseOperation.executeQuery(deleteContent,processResult);
 			function processResult(err,data){
@@ -186,7 +186,7 @@ router.post('/deleteFolder', passport.authenticate('jwt', { session: false }), f
 	    if (err) {console.error(err);}
 	    else 
 	    {   
-	    	var deleteContent = "delete from content where content_path ='"+folderPath+"'";
+	    	var deleteContent = "delete from content where content_path ='"+req.body.folderPath+"'";
 			  console.log("delete query for content star",deleteContent);
 			  databaseOperation.executeQuery(deleteContent,processResult);
 				function processResult(err,data){
