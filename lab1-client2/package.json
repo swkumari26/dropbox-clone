@@ -8,6 +8,7 @@
     "bootstrap": "^4.0.0-beta",
     "history": "^4.7.2",
     "jwt-decode": "^2.2.0",
+    "mocha": "^4.0.1",
     "react": "^15.6.1",
     "react-bootstrap-dropdown-menu": "^1.1.11",
     "react-dom": "^15.6.1",
@@ -28,7 +29,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "mocha",
     "eject": "react-scripts eject"
   }
 }
